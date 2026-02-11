@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import i18n from "@/i18n";
 import koFlag from "@/assets/flags/ko.png";
@@ -8,6 +8,23 @@ import { ChevronDown } from "lucide-react";
 export default function LanguageSwitcher() {
   const { i18n: i18nInstance } = useTranslation();
   const [open, setOpen] = useState(false);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        wrapperRef.current &&
+        !wrapperRef.current.contains(event.target as Node)
+      ) {
+        setOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const currentLang = i18nInstance.language;
 
@@ -25,7 +42,7 @@ export default function LanguageSwitcher() {
   const current = languages.find((l) => l.code === currentLang);
 
   return (
-    <div className="text-sm relative">
+    <div ref={wrapperRef} className="text-sm relative">
       <button
         onClick={() => setOpen(!open)}
         className="flex items-center gap-2 px-3 py-2 text-white cursor-pointer"

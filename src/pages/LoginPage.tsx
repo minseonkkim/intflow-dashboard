@@ -3,7 +3,7 @@ import { useMutation } from "@tanstack/react-query";
 import { login } from "@/api/auth";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import LanguageSwitcher from "@/component/LanguageSwitcher";
+import LanguageSwitcher from "@/component/common/LanguageSwitcher";
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -30,7 +30,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#062454]">
+    <div className="min-h-screen flex items-center justify-center">
       <div className="absolute top-4 left-4">
         <LanguageSwitcher />
       </div>

@@ -5,11 +5,13 @@ import {
   ChevronDown,
   ChevronRight,
   Clock4,
+  Loader2,
   PiggyBank,
   Thermometer,
 } from "lucide-react";
-import LanguageSwitcher from "@/component/LanguageSwitcher";
+import LanguageSwitcher from "@/component/common/LanguageSwitcher";
 import { useTranslation } from "react-i18next";
+import FarmSelector from "@/component/dashboard/FarmSelector";
 
 export default function DashboardPage() {
   const { data, isLoading, isError } = usePens();
@@ -19,7 +21,13 @@ export default function DashboardPage() {
   const [selectedFarmId, setSelectedFarmId] = useState("ALL");
   const [openPenId, setOpenPenId] = useState<string | null>(null);
 
-  if (isLoading) return <p className="p-6">로딩 중...</p>;
+  if (isLoading)
+    return (
+      <div className="flex justify-center items-center h-full">
+        <Loader2 className="animate-spin text-white w-20 h-20" />
+      </div>
+    );
+
   if (isError) return <p className="p-6 text-red-500">에러 발생</p>;
 
   const farms = data?.piggeies ?? [];
@@ -35,7 +43,7 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="p-6 min-h-screen bg-[#062454]">
+    <div className="p-6 min-h-screen">
       <div className="mb-6 flex flex-row justify-between items-center text-sm">
         <div className="w-40">
           <LanguageSwitcher />
@@ -43,19 +51,13 @@ export default function DashboardPage() {
         <div className="text-white font-bold text-lg hidden lg:block">
           {t("dashboard.title")}
         </div>
-        <div>
-          <select
-            value={selectedFarmId}
-            onChange={(e) => setSelectedFarmId(e.target.value)}
-            className="px-4 py-2 rounded-lg border border-white text-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-white bg-transparent"
-          >
-            <option value="ALL">{t("dashboard.allfarms")}</option>
-            {farms.map((farm) => (
-              <option key={farm.piggery_id} value={farm.piggery_id}>
-                {farm.piggery_name}
-              </option>
-            ))}
-          </select>
+        <div className="flex flex-row items-center">
+          <FarmSelector
+            farms={farms}
+            selectedFarmId={selectedFarmId}
+            onChange={setSelectedFarmId}
+            allLabel={t("dashboard.allfarms")}
+          />
           <button
             className="ml-2 p-2 border border-white text-white rounded-lg cursor-pointer hover:bg-white hover:text-[#062454] transition"
             onClick={logout}
@@ -66,7 +68,10 @@ export default function DashboardPage() {
       </div>
 
       {filteredFarms.map((farm) => (
-        <section key={farm.piggery_id} className="bg-[#F8F8F8] rounded-lg p-6">
+        <section
+          key={farm.piggery_id}
+          className="bg-[#F8F8F8] rounded-lg p-3 lg:p-6 min-h-[600px] flex flex-col"
+        >
           <div className="space-y-4">
             {farm.pens.map((pen) => {
               const isOpen = openPenId === pen.pen_id;
@@ -77,15 +82,15 @@ export default function DashboardPage() {
                   onClick={() => setOpenPenId(isOpen ? null : pen.pen_id)}
                   className="bg-white border border-gray-200 rounded-lg cursor-pointer"
                 >
-                  <div className="flex flex-row items-center p-4">
-                    <span className="lg:ml-2 lg:mr-6 mr-2">
+                  <div className="flex flex-row items-start lg:items-center p-4">
+                    <span className="lg:ml-2 lg:mr-6 mr-2 mt-1 lg:mt-0">
                       {isOpen ? (
                         <ChevronDown size={22} />
                       ) : (
                         <ChevronRight size={22} className="text-gray-400" />
                       )}
                     </span>
-                    <div className="flex flex-col lg:flex-row justify-between w-full gap-4 lg:gap-30">
+                    <div className="flex flex-col lg:flex-row justify-between w-full gap-4 lg:gap-32">
                       <div className="flex flex-row gap-2 items-center">
                         <span className="font-bold text-lg">
                           {pen.pen_name}
