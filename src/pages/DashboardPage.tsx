@@ -8,9 +8,13 @@ import {
   PiggyBank,
   Thermometer,
 } from "lucide-react";
+import LanguageSwitcher from "@/component/LanguageSwitcher";
+import { useTranslation } from "react-i18next";
 
 export default function DashboardPage() {
   const { data, isLoading, isError } = usePens();
+
+  const { t } = useTranslation();
 
   const [selectedFarmId, setSelectedFarmId] = useState("ALL");
   const [openPenId, setOpenPenId] = useState<string | null>(null);
@@ -33,15 +37,19 @@ export default function DashboardPage() {
   return (
     <div className="p-6 min-h-screen bg-[#062454]">
       <div className="mb-6 flex flex-row justify-between items-center text-sm">
-        <div></div>
-        <div className="text-white font-bold text-lg">Inflow Test</div>
+        <div className="w-40">
+          <LanguageSwitcher />
+        </div>
+        <div className="text-white font-bold text-lg hidden lg:block">
+          {t("dashboard.title")}
+        </div>
         <div>
           <select
             value={selectedFarmId}
             onChange={(e) => setSelectedFarmId(e.target.value)}
             className="px-4 py-2 rounded-lg border border-white text-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-white bg-transparent"
           >
-            <option value="ALL">전체 농장</option>
+            <option value="ALL">{t("dashboard.allfarms")}</option>
             {farms.map((farm) => (
               <option key={farm.piggery_id} value={farm.piggery_id}>
                 {farm.piggery_name}
@@ -52,7 +60,7 @@ export default function DashboardPage() {
             className="ml-2 p-2 border border-white text-white rounded-lg cursor-pointer hover:bg-white hover:text-[#062454] transition"
             onClick={logout}
           >
-            로그아웃
+            {t("dashboard.logout")}
           </button>
         </div>
       </div>
@@ -83,23 +91,25 @@ export default function DashboardPage() {
                           {pen.pen_name}
                         </span>
                         <span className="text-white bg-red-600 px-3 py-1.5 rounded-full text-sm">
-                          {pen.abnormal_pigs.length}두
+                          {pen.abnormal_pigs.length}
+                          {t("dashboard.pigcount")}
                         </span>
                       </div>
                       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 flex-1">
                         <div className="flex flex-row items-center gap-2 lg:gap-4">
                           <PiggyBank className="w-10 h-10 shrink-0 bg-[#F6FAFF] text-[#062454] rounded-full p-2" />
                           <div className="flex flex-col gap-1">
-                            <span>재고</span>
+                            <span>{t("dashboard.inventory")}</span>
                             <span className="font-semibold truncate">
-                              {pen.current_pig_count}두
+                              {pen.current_pig_count}
+                              {t("dashboard.pigcount")}
                             </span>
                           </div>
                         </div>
                         <div className="flex flex-row items-center gap-2 lg:gap-4">
                           <Activity className="w-10 h-10 shrink-0 bg-[#F6FAFF] text-[#062454] rounded-full p-2" />
                           <div className="flex flex-col gap-1">
-                            <span>활력도</span>
+                            <span>{t("dashboard.vitality")}</span>
                             <span className="font-semibold truncate">
                               {pen.avg_activity_level}m
                             </span>
@@ -108,16 +118,17 @@ export default function DashboardPage() {
                         <div className="flex flex-row items-center gap-2 lg:gap-4">
                           <Clock4 className="w-10 h-10 shrink-0 bg-[#F6FAFF] text-[#062454] rounded-full p-2" />
                           <div className="flex flex-col gap-1">
-                            <span>식사 시간</span>
+                            <span>{t("dashboard.mealtime")}</span>
                             <span className="font-semibold truncate">
-                              {pen.avg_feeding_time_minutes}분
+                              {pen.avg_feeding_time_minutes}
+                              {t("dashboard.minutes")}
                             </span>
                           </div>
                         </div>
                         <div className="flex flex-row items-center gap-2 lg:gap-4">
                           <Thermometer className="w-10 h-10 shrink-0 bg-[#F6FAFF] text-[#062454] rounded-full p-2" />
                           <div className="flex flex-col gap-1">
-                            <span>온도</span>
+                            <span>{t("dashboard.tempature")}</span>
                             <span className="font-semibold truncate">
                               {pen.avg_temperature_celsius}℃
                             </span>
@@ -131,7 +142,9 @@ export default function DashboardPage() {
                       <hr className="border-gray-200" />
                       <div className="p-6">
                         <p className="mb-4 text-gray-500 font-semibold">
-                          이상 개체 목록 ({pen.abnormal_pigs.length}구)
+                          {t("dashboard.listofanomalies")} (
+                          {pen.abnormal_pigs.length}
+                          {t("dashboard.pigcount")})
                         </p>
 
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
@@ -157,7 +170,10 @@ export default function DashboardPage() {
                                 </div>
                                 <div className="flex flex-row items-center gap-2 lg:gap-4">
                                   <Clock4 className="w-10 h-10 shrink-0 bg-[#F6FAFF] text-[#062454] rounded-full p-2" />
-                                  <span>{pig.feeding_time}분</span>
+                                  <span>
+                                    {pig.feeding_time}
+                                    {t("dashboard.minutes")}
+                                  </span>
                                 </div>
                                 <p></p>
                               </div>

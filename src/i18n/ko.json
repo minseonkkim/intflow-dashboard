@@ -1,0 +1,21 @@
+{
+  "login": {
+    "title": "스마트팜 로그인",
+    "button": "로그인",
+    "loggingIn": "로그인 중...",
+    "id": "아이디",
+    "password": "비밀번호"
+  },
+  "dashboard": {
+    "title": "대시보드",
+    "logout": "로그아웃",
+    "allfarms": "전체 농장",
+    "inventory": "재고",
+    "vitality": "활력도",
+    "mealtime": "식사 시간",
+    "tempature": "온도",
+    "listofanomalies": "이상 개체 목록",
+    "minutes": "분",
+    "pigcount": "두"
+  }
+}
