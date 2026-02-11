@@ -1,19 +1,11 @@
 import { useParams } from "react-router-dom";
 import { usePenDetail } from "@/hooks/usePenDetail";
 import { usePenRealtime } from "@/hooks/usePenRealtime";
-import { Activity, ChevronLeft, Loader2, Thermometer } from "lucide-react";
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-  CartesianGrid,
-} from "recharts";
+import { ChevronLeft, Loader2 } from "lucide-react";
 import LanguageSwitcher from "@/component/common/LanguageSwitcher";
 import { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
+import RealtimeDataCard from "@/component/detail/RealtimeDataCard";
+import ActivityChart from "@/component/detail/ActivityChart";
 
 type ChartEntry = {
   index: number;
@@ -28,8 +20,6 @@ export default function PenDetailPage() {
 
   const { data, isLoading, isError } = usePenDetail(numericId);
   const realtime = usePenRealtime(numericId);
-
-  const { t } = useTranslation();
 
   if (isLoading)
     return (
@@ -80,63 +70,9 @@ export default function PenDetailPage() {
         <div></div>
       </div>
       {/* 실시간 데이터 카드 */}
-      {realtime && (
-        <div className="bg-white p-6 rounded-xl shadow">
-          <div className="grid grid-cols-2 gap-6 text-lg">
-            <div className="flex flex-row items-center gap-2 lg:gap-4">
-              <Activity className="w-10 h-10 shrink-0 bg-[#F6FAFF] text-[#062454] rounded-full p-2" />
-              <div className="flex flex-col gap-1">
-                <p>{t("detail.activity")}</p>
-                <p className="font-bold text-2xl text-[#8B5CF6]">
-                  {realtime.data.activity}m
-                </p>
-              </div>
-            </div>
-            <div className="flex flex-row items-center gap-2 lg:gap-4">
-              <Thermometer className="w-10 h-10 shrink-0 bg-[#F6FAFF] text-[#062454] rounded-full p-2" />
-              <div className="flex flex-col gap-1">
-                <p>{t("detail.feeding")}</p>
-                <p className="font-bold text-2xl text-[#F97316]">
-                  {realtime.data.feeding_time}
-                  {t("detail.minutes")}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      {realtime && <RealtimeDataCard realtime={realtime.data} />}
       {/* 활동량 그래프 */}
-      <div className="bg-white p-6 rounded-xl shadow">
-        <div className="h-100">
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={chartData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="timestamp" />
-
-              <YAxis />
-              <Tooltip />
-
-              <Line
-                type="monotone"
-                dataKey="activity"
-                stroke="#8B5CF6"
-                strokeWidth={3}
-                dot={{ r: 4 }}
-                activeDot={false}
-              />
-
-              <Line
-                type="monotone"
-                dataKey="feeding"
-                stroke="#F97316"
-                strokeWidth={3}
-                dot={{ r: 4 }}
-                activeDot={false}
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
-      </div>
+      <ActivityChart chartData={chartData} />
     </div>
   );
 }

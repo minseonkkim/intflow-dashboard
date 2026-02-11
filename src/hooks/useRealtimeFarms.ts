@@ -1,33 +1,10 @@
 import { useEffect, useState, useRef } from "react";
 import { usePens } from "@/hooks/usePens";
-
-interface Pig {
-  wid: number;
-  thumbnail_url: string;
-  activity: number;
-  feeding_time: number;
-}
-
-interface Pen {
-  pen_id: string;
-  pen_name: string;
-  current_pig_count: number;
-  avg_activity_level: number;
-  avg_feeding_time_minutes: number;
-  avg_temperature_celsius: number;
-  abnormal_pigs: Pig[];
-}
-
-interface Farm {
-  piggery_id: string;
-  piggery_name: string;
-  total_pigs: number;
-  pens: Pen[];
-}
+import type { Piggery } from "@/types/pen";
 
 export function useRealtimeFarms() {
   const { data: initialData, isLoading, isError } = usePens();
-  const [farms, setFarms] = useState<Farm[]>(initialData?.piggeies ?? []);
+  const [farms, setFarms] = useState<Piggery[]>(initialData?.piggeies ?? []);
   const wsRef = useRef<WebSocket | null>(null);
 
   // 초기 데이터 세팅
@@ -46,7 +23,7 @@ export function useRealtimeFarms() {
 
     ws.onmessage = (event) => {
       try {
-        const message = JSON.parse(event.data) as { piggeies: Farm[] };
+        const message = JSON.parse(event.data) as { piggeies: Piggery[] };
         console.log("WebSocket message received:", message);
         setFarms((prevFarms) => {
           return message.piggeies.map((incomingFarm) => {
