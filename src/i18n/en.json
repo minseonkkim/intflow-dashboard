@@ -16,6 +16,12 @@
     "tempature": "Temperature",
     "listofanomalies": "List of Anomalies",
     "minutes": "min",
-    "pigcount": "head(s)"
+    "pigcount": "head(s)",
+    "detail": "Detail"
+  },
+  "detail": {
+    "activity": "Activity",
+    "feeding": "Feeding Time",
+    "minutes": "min"
   }
 }

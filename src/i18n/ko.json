@@ -16,6 +16,12 @@
     "tempature": "온도",
     "listofanomalies": "이상 개체 목록",
     "minutes": "분",
-    "pigcount": "두"
+    "pigcount": "두",
+    "detail": "상세보기"
+  },
+  "detail": {
+    "activity": "활동량",
+    "feeding": "급이 시간",
+    "minutes": "분"
   }
 }

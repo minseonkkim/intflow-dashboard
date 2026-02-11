@@ -12,9 +12,12 @@ import {
 import LanguageSwitcher from "@/component/common/LanguageSwitcher";
 import { useTranslation } from "react-i18next";
 import FarmSelector from "@/component/dashboard/FarmSelector";
+import { useNavigate } from "react-router-dom";
 
 export default function DashboardPage() {
   const { data, isLoading, isError } = usePens();
+
+  const navigate = useNavigate();
 
   const { t } = useTranslation();
 
@@ -90,7 +93,7 @@ export default function DashboardPage() {
                         <ChevronRight size={22} className="text-gray-400" />
                       )}
                     </span>
-                    <div className="flex flex-col lg:flex-row justify-between w-full gap-4 lg:gap-32">
+                    <div className="flex flex-col lg:flex-row justify-between w-full gap-4 lg:gap-30">
                       <div className="flex flex-row gap-2 items-center">
                         <span className="font-bold text-lg">
                           {pen.pen_name}
@@ -139,6 +142,15 @@ export default function DashboardPage() {
                             </span>
                           </div>
                         </div>
+                      </div>
+                      <div
+                        className="text-[#062454] font-semibold underline cursor-pointer"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigate(`/pen/${pen.pen_id}`);
+                        }}
+                      >
+                        {t("dashboard.detail")}
                       </div>
                     </div>
                   </div>

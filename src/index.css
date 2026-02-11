@@ -9,3 +9,7 @@ body,
 body {
   background-color: #062454;
 }
+
+.recharts-wrapper:focus {
+  outline: none !important;
+}
