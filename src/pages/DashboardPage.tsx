@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { usePens } from "@/hooks/usePens";
 import {
   Activity,
   ChevronDown,
@@ -13,12 +12,11 @@ import LanguageSwitcher from "@/component/common/LanguageSwitcher";
 import { useTranslation } from "react-i18next";
 import FarmSelector from "@/component/dashboard/FarmSelector";
 import { useNavigate } from "react-router-dom";
+import { useRealtimeFarms } from "@/hooks/useRealtimeFarms";
 
 export default function DashboardPage() {
-  const { data, isLoading, isError } = usePens();
-
+  const { farms, isLoading, isError } = useRealtimeFarms();
   const navigate = useNavigate();
-
   const { t } = useTranslation();
 
   const [selectedFarmId, setSelectedFarmId] = useState("ALL");
@@ -32,8 +30,6 @@ export default function DashboardPage() {
     );
 
   if (isError) return <p className="p-6 text-red-500">에러 발생</p>;
-
-  const farms = data?.piggeies ?? [];
 
   const filteredFarms =
     selectedFarmId === "ALL"
@@ -163,7 +159,6 @@ export default function DashboardPage() {
                           {pen.abnormal_pigs.length}
                           {t("dashboard.pigcount")})
                         </p>
-
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
                           {pen.abnormal_pigs.map((pig) => (
                             <div
@@ -192,7 +187,6 @@ export default function DashboardPage() {
                                     {t("dashboard.minutes")}
                                   </span>
                                 </div>
-                                <p></p>
                               </div>
                             </div>
                           ))}

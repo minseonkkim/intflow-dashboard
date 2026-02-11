@@ -33,8 +33,8 @@ export default function PenDetailPage() {
 
   if (isLoading)
     return (
-      <div className="flex justify-center items-center h-screen">
-        <Loader2 className="animate-spin w-10 h-10" />
+      <div className="flex justify-center items-center h-full">
+        <Loader2 className="animate-spin text-white w-20 h-20" />
       </div>
     );
 
