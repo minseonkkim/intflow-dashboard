@@ -25,6 +25,11 @@ export default function DashboardPage() {
       ? farms
       : farms.filter((f) => f.piggery_id === selectedFarmId);
 
+  const logout = () => {
+    localStorage.removeItem("accessToken");
+    window.location.href = "/login";
+  };
+
   return (
     <div className="p-6 min-h-screen bg-[#062454]">
       <div className="mb-6 flex flex-row justify-between items-center text-sm">
@@ -34,7 +39,7 @@ export default function DashboardPage() {
           <select
             value={selectedFarmId}
             onChange={(e) => setSelectedFarmId(e.target.value)}
-            className="px-4 py-2 rounded-lg border border-white text-white focus:outline-none"
+            className="px-4 py-2 rounded-lg border border-white text-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-white bg-transparent"
           >
             <option value="ALL">전체 농장</option>
             {farms.map((farm) => (
@@ -43,7 +48,10 @@ export default function DashboardPage() {
               </option>
             ))}
           </select>
-          <button className="ml-2 p-2 border border-white text-white rounded-lg">
+          <button
+            className="ml-2 p-2 border border-white text-white rounded-lg cursor-pointer hover:bg-white hover:text-[#062454] transition"
+            onClick={logout}
+          >
             로그아웃
           </button>
         </div>
