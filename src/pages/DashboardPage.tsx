@@ -9,24 +9,29 @@ import ErrorScreen from "@/component/common/ErrorScreen";
 
 export default function DashboardPage() {
   const { farms: realtimeFarms, isLoading, isError } = useRealtimeFarms();
-  const [farms, setFarms] = useState(realtimeFarms ?? []);
-
-  useEffect(() => {
-    if (realtimeFarms) setFarms(realtimeFarms);
-  }, [realtimeFarms]);
   const { t } = useTranslation();
 
+  const [farms, setFarms] = useState(realtimeFarms ?? []);
   const [selectedFarmId, setSelectedFarmId] = useState("ALL");
   const [openPenId, setOpenPenId] = useState<string | null>(null);
 
-  if (isLoading)
+  useEffect(() => {
+    if (realtimeFarms) {
+      setFarms(realtimeFarms);
+    }
+  }, [realtimeFarms]);
+
+  if (isLoading) {
     return (
       <div className="flex justify-center items-center h-full">
         <Loader2 className="animate-spin text-white w-20 h-20" />
       </div>
     );
+  }
 
-  if (isError) return <ErrorScreen />;
+  if (isError) {
+    return <ErrorScreen />;
+  }
 
   const filteredFarms =
     selectedFarmId === "ALL"
@@ -44,9 +49,11 @@ export default function DashboardPage() {
         <div className="w-40">
           <LanguageSwitcher />
         </div>
+
         <div className="text-white font-bold text-lg hidden lg:block">
           {t("dashboard.title")}
         </div>
+
         <div className="flex flex-row items-center">
           <FarmSelector
             farms={farms}
@@ -54,6 +61,7 @@ export default function DashboardPage() {
             onChange={setSelectedFarmId}
             allLabel={t("dashboard.allfarms")}
           />
+
           <button
             className="ml-2 p-2 border border-white text-white rounded-lg cursor-pointer hover:bg-white hover:text-[#062454] transition"
             onClick={logout}

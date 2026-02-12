@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { usePens } from "@/hooks/usePens";
 import type { Piggery } from "@/types/pen";
 
@@ -7,29 +7,42 @@ export function useRealtimeFarms() {
   const [farms, setFarms] = useState<Piggery[]>(initialData?.piggeies ?? []);
   const wsRef = useRef<WebSocket | null>(null);
 
+  const reconnectAttemptRef = useRef(0);
+  const reconnectTimeoutRef = useRef<number | null>(null);
+
+  const MAX_RECONNECT_DELAY = 30000; // 최대 30초
+  const BASE_DELAY = 1000; // 1초
+
   // 초기 데이터 세팅
   useEffect(() => {
     if (initialData?.piggeies) setFarms(initialData.piggeies);
   }, [initialData]);
 
-  useEffect(() => {
+  const connectWebSocket = useCallback(() => {
     const token = localStorage.getItem("accessToken");
     if (!token) return;
 
     const ws = new WebSocket(
       `${import.meta.env.VITE_WS_API_BASE_URL}?token=${token}`,
     );
+
     wsRef.current = ws;
+
+    ws.onopen = () => {
+      console.log("WebSocket connected");
+      reconnectAttemptRef.current = 0; // 성공하면 초기화
+    };
 
     ws.onmessage = (event) => {
       try {
         const message = JSON.parse(event.data) as { piggeies: Piggery[] };
-        console.log("WebSocket message received:", message);
-        setFarms((prevFarms) => {
-          return message.piggeies.map((incomingFarm) => {
+
+        setFarms((prevFarms) =>
+          message.piggeies.map((incomingFarm) => {
             const existingFarm = prevFarms.find(
               (f) => f.piggery_id === incomingFarm.piggery_id,
             );
+
             if (existingFarm) {
               return {
                 ...existingFarm,
@@ -38,6 +51,7 @@ export function useRealtimeFarms() {
                   const existingPen = existingFarm.pens.find(
                     (p) => p.pen_id === incomingPen.pen_id,
                   );
+
                   if (existingPen) {
                     return {
                       ...existingPen,
@@ -46,24 +60,48 @@ export function useRealtimeFarms() {
                         incomingPen.abnormal_pigs ?? existingPen.abnormal_pigs,
                     };
                   }
+
                   return incomingPen;
                 }),
               };
             }
+
             return incomingFarm;
-          });
-        });
+          }),
+        );
       } catch (err) {
         console.error("WebSocket message parse error:", err);
       }
     };
 
-    ws.onclose = (event) =>
-      console.log(`WebSocket disconnected: ${event.code}`);
-    ws.onerror = (err) => console.error("WebSocket error:", err);
+    ws.onclose = () => {
+      console.log("WebSocket disconnected. Reconnecting...");
 
-    return () => ws.close();
+      const attempt = reconnectAttemptRef.current;
+      const delay = Math.min(BASE_DELAY * 2 ** attempt, MAX_RECONNECT_DELAY);
+
+      reconnectTimeoutRef.current = window.setTimeout(() => {
+        reconnectAttemptRef.current += 1;
+        connectWebSocket();
+      }, delay);
+    };
+
+    ws.onerror = (err) => {
+      console.error("WebSocket error:", err);
+      ws.close();
+    };
   }, []);
+
+  useEffect(() => {
+    connectWebSocket();
+
+    return () => {
+      if (reconnectTimeoutRef.current) {
+        clearTimeout(reconnectTimeoutRef.current);
+      }
+      wsRef.current?.close();
+    };
+  }, [connectWebSocket]);
 
   return { farms, isLoading, isError };
 }
