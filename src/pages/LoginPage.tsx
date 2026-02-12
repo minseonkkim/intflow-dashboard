@@ -4,6 +4,8 @@ import { login } from "@/api/auth";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import LanguageSwitcher from "@/component/common/LanguageSwitcher";
+import type { LoginParams, LoginResponse } from "@/api/auth";
+import type { AxiosError } from "axios";
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -13,14 +15,18 @@ export default function LoginPage() {
 
   const { t } = useTranslation();
 
-  const { mutate, isPending } = useMutation({
+  const { mutate, isPending } = useMutation<
+    LoginResponse,
+    AxiosError,
+    LoginParams
+  >({
     mutationFn: login,
     onSuccess: (data) => {
       localStorage.setItem("accessToken", data.access_token);
       navigate("/", { replace: true });
     },
-    onError: (error: any) => {
-      const status = error?.response?.status;
+    onError: (error) => {
+      const status = error.response?.status;
       if (status === 401) {
         setErrorKey("login.invalidCredentials");
       } else if (status === 422) {

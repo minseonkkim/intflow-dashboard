@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import type { PenDetailResponse, PenDetailTimeSeriesPoint } from "@/types/pen";
 
 function waitWithAbort(delay: number, signal?: AbortSignal) {
   return new Promise<void>((resolve, reject) => {
@@ -27,7 +28,7 @@ async function fetchPenDetail(
   roomId: number,
   token: string,
   signal?: AbortSignal,
-) {
+): Promise<PenDetailResponse> {
   const maxRetries = 3;
   let attempt = 0;
 
@@ -45,9 +46,9 @@ async function fetchPenDetail(
 
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
-      const data = await response.json();
+      const data: unknown = await response.json();
 
-      if (!data || !Array.isArray(data.time_series)) {
+      if (!isPenDetailResponse(data)) {
         throw new Error("Invalid response structure");
       }
 
@@ -64,6 +65,30 @@ async function fetchPenDetail(
       await waitWithAbort(delay, signal);
     }
   }
+
+  throw new Error("Failed to fetch pen detail");
+}
+
+function isPenDetailResponse(value: unknown): value is PenDetailResponse {
+  if (!value || typeof value !== "object") return false;
+
+  const candidate = value as Partial<PenDetailResponse>;
+  if (typeof candidate.name !== "string") return false;
+  if (!Array.isArray(candidate.time_series)) return false;
+
+  return candidate.time_series.every(isPenDetailTimeSeriesPoint);
+}
+
+function isPenDetailTimeSeriesPoint(
+  value: unknown,
+): value is PenDetailTimeSeriesPoint {
+  if (!value || typeof value !== "object") return false;
+
+  const point = value as Partial<PenDetailTimeSeriesPoint>;
+  return (
+    typeof point.activity === "number" &&
+    typeof point.feeding_time === "number"
+  );
 }
 
 export function usePenDetail(roomId: number) {

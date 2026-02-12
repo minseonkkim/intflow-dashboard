@@ -25,3 +25,22 @@ export interface Piggery {
 export interface PensResponse {
   piggeies: Piggery[];
 }
+
+export interface PenRealtimeData {
+  activity: number;
+  feeding_time: number;
+}
+
+export interface PenRealtimeMessage {
+  data: PenRealtimeData;
+}
+
+export interface PenDetailTimeSeriesPoint {
+  activity: number;
+  feeding_time: number;
+}
+
+export interface PenDetailResponse {
+  name: string;
+  time_series: PenDetailTimeSeriesPoint[];
+}

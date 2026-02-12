@@ -8,6 +8,7 @@ import RealtimeDataCard from "@/component/detail/RealtimeDataCard";
 import ActivityChart from "@/component/detail/ActivityChart";
 import ErrorScreen from "@/component/common/ErrorScreen";
 import LoadingScreen from "@/component/common/LoadingScreen";
+import type { PenDetailTimeSeriesPoint } from "@/types/pen";
 
 type ChartEntry = {
   index: number;
@@ -29,7 +30,7 @@ export default function PenDetailPage() {
     if (!data?.time_series) return;
 
     const formatted = data.time_series.map(
-      (item: any, index: number): ChartEntry => ({
+      (item: PenDetailTimeSeriesPoint, index: number): ChartEntry => ({
         index: index + 1,
         timestamp: `T-${data.time_series.length - index}`,
         activity: item.activity,

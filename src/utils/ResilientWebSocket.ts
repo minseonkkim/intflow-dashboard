@@ -1,4 +1,4 @@
-export class ResilientWebSocket {
+export class ResilientWebSocket<TMessage = unknown> {
   private url: string;
   private ws: WebSocket | null = null;
 
@@ -11,9 +11,9 @@ export class ResilientWebSocket {
   private reconnectTimer: number | null = null;
   private manuallyClosed = false;
 
-  private onMessage: (data: any) => void;
+  private onMessage: (data: TMessage) => void;
 
-  constructor(url: string, onMessage: (data: any) => void) {
+  constructor(url: string, onMessage: (data: TMessage) => void) {
     this.url = url;
     this.onMessage = onMessage;
     this.connect();
@@ -33,7 +33,7 @@ export class ResilientWebSocket {
 
     this.ws.onmessage = (event) => {
       try {
-        const parsed = JSON.parse(event.data);
+        const parsed = JSON.parse(event.data) as TMessage;
         this.onMessage(parsed);
       } catch (e) {
         console.error("Message parse error:", e);
