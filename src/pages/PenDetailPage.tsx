@@ -3,7 +3,7 @@ import { usePenDetail } from "@/hooks/usePenDetail";
 import { usePenRealtime } from "@/hooks/usePenRealtime";
 import { ChevronLeft } from "lucide-react";
 import LanguageSwitcher from "@/component/common/LanguageSwitcher";
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
 import RealtimeDataCard from "@/component/detail/RealtimeDataCard";
 import ActivityChart from "@/component/detail/ActivityChart";
 import ErrorScreen from "@/component/common/ErrorScreen";
@@ -24,37 +24,36 @@ export default function PenDetailPage() {
   const { data, isLoading, isError } = usePenDetail(numericId);
   const realtime = usePenRealtime(numericId);
 
-  const [chartData, setChartData] = useState<ChartEntry[]>([]);
+  const baseChartData = useMemo<ChartEntry[]>(() => {
+    if (!data?.time_series) return [];
 
-  useEffect(() => {
-    if (!data?.time_series) return;
-
-    const formatted = data.time_series.map(
+    return data.time_series
+      .map(
       (item: PenDetailTimeSeriesPoint, index: number): ChartEntry => ({
         index: index + 1,
         timestamp: `T-${data.time_series.length - index}`,
         activity: item.activity,
         feeding: item.feeding_time,
       }),
-    );
-
-    setChartData(formatted.slice(-10));
+      )
+      .slice(-10);
   }, [data]);
 
-  useEffect(() => {
-    if (!realtime?.data) return;
+  const chartData = useMemo<ChartEntry[]>(() => {
+    if (!realtime?.data) return baseChartData;
 
-    setChartData((prev) => {
-      const newEntry: ChartEntry = {
-        index: prev.length > 0 ? prev[prev.length - 1].index + 1 : 1,
+    const nextIndex =
+      baseChartData.length > 0 ? baseChartData[baseChartData.length - 1].index + 1 : 1;
+
+    const newEntry: ChartEntry = {
+      index: nextIndex,
         timestamp: new Date().toLocaleTimeString("en-GB"),
         activity: realtime.data.activity,
         feeding: realtime.data.feeding_time,
       };
 
-      return [...prev, newEntry].slice(-10);
-    });
-  }, [realtime]);
+    return [...baseChartData, newEntry].slice(-10);
+  }, [baseChartData, realtime]);
 
   if (isLoading) {
     return <LoadingScreen />;

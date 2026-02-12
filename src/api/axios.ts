@@ -27,7 +27,6 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401 && !isRedirecting) {
-      console.log("인증 만료");
       isRedirecting = true;
 
       localStorage.removeItem("accessToken");

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import LanguageSwitcher from "@/component/common/LanguageSwitcher";
 import { useTranslation } from "react-i18next";
 import FarmSelector from "@/component/dashboard/FarmSelector";
@@ -11,15 +11,9 @@ export default function DashboardPage() {
   const { farms: realtimeFarms, isLoading, isError } = useRealtimeFarms();
   const { t } = useTranslation();
 
-  const [farms, setFarms] = useState(realtimeFarms ?? []);
+  const farms = realtimeFarms ?? [];
   const [selectedFarmId, setSelectedFarmId] = useState("ALL");
   const [openPenId, setOpenPenId] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (realtimeFarms) {
-      setFarms(realtimeFarms);
-    }
-  }, [realtimeFarms]);
 
   if (isLoading) {
     return <LoadingScreen />;

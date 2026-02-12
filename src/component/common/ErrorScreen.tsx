@@ -2,7 +2,7 @@ import { AlertCircle } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import LanguageSwitcher from "@/component/common/LanguageSwitcher";
 
-export default function ErrorScreen({}) {
+export default function ErrorScreen() {
   const { t } = useTranslation();
 
   return (
