@@ -20,6 +20,10 @@ export class ResilientWebSocket {
   }
 
   private connect() {
+    if (this.manuallyClosed) {
+      return;
+    }
+
     this.ws = new WebSocket(this.url);
 
     this.ws.onopen = () => {
@@ -64,6 +68,9 @@ export class ResilientWebSocket {
     this.reconnectAttempts++;
 
     this.reconnectTimer = window.setTimeout(() => {
+      if (this.manuallyClosed) {
+        return;
+      }
       this.connect();
     }, delay);
 
@@ -73,8 +80,9 @@ export class ResilientWebSocket {
   public close() {
     this.manuallyClosed = true;
 
-    if (this.reconnectTimer) {
+    if (this.reconnectTimer !== null) {
       clearTimeout(this.reconnectTimer);
+      this.reconnectTimer = null;
     }
 
     this.ws?.close(1000);

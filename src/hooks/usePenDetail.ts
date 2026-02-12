@@ -1,6 +1,33 @@
 import { useQuery } from "@tanstack/react-query";
 
-async function fetchPenDetail(roomId: number, token: string) {
+function waitWithAbort(delay: number, signal?: AbortSignal) {
+  return new Promise<void>((resolve, reject) => {
+    const timeoutId = window.setTimeout(() => {
+      signal?.removeEventListener("abort", onAbort);
+      resolve();
+    }, delay);
+
+    const onAbort = () => {
+      clearTimeout(timeoutId);
+      signal?.removeEventListener("abort", onAbort);
+      reject(new DOMException("Request aborted", "AbortError"));
+    };
+
+    if (signal) {
+      if (signal.aborted) {
+        onAbort();
+        return;
+      }
+      signal.addEventListener("abort", onAbort);
+    }
+  });
+}
+
+async function fetchPenDetail(
+  roomId: number,
+  token: string,
+  signal?: AbortSignal,
+) {
   const maxRetries = 3;
   let attempt = 0;
 
@@ -12,6 +39,7 @@ async function fetchPenDetail(roomId: number, token: string) {
           headers: {
             Authorization: `Bearer ${token}`,
           },
+          signal,
         },
       );
 
@@ -25,11 +53,15 @@ async function fetchPenDetail(roomId: number, token: string) {
 
       return data;
     } catch (error) {
+      if (error instanceof DOMException && error.name === "AbortError") {
+        throw error;
+      }
+
       attempt++;
       if (attempt >= maxRetries) throw error;
 
       const delay = 1000 * Math.pow(2, attempt);
-      await new Promise((res) => setTimeout(res, delay));
+      await waitWithAbort(delay, signal);
     }
   }
 }
@@ -39,7 +71,7 @@ export function usePenDetail(roomId: number) {
 
   return useQuery({
     queryKey: ["penDetail", roomId],
-    queryFn: () => fetchPenDetail(roomId, token),
+    queryFn: ({ signal }) => fetchPenDetail(roomId, token, signal),
     enabled: !!roomId,
   });
 }

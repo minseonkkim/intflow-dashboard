@@ -9,6 +9,7 @@ export function useRealtimeFarms() {
 
   const reconnectAttemptRef = useRef(0);
   const reconnectTimeoutRef = useRef<number | null>(null);
+  const isUnmountedRef = useRef(false);
 
   const MAX_RECONNECT_DELAY = 30000; // 최대 30초
   const BASE_DELAY = 1000; // 1초
@@ -19,6 +20,8 @@ export function useRealtimeFarms() {
   }, [initialData]);
 
   const connectWebSocket = useCallback(() => {
+    if (isUnmountedRef.current) return;
+
     const token = localStorage.getItem("accessToken");
     if (!token) return;
 
@@ -75,12 +78,15 @@ export function useRealtimeFarms() {
     };
 
     ws.onclose = () => {
+      if (isUnmountedRef.current) return;
+
       console.log("WebSocket disconnected. Reconnecting...");
 
       const attempt = reconnectAttemptRef.current;
       const delay = Math.min(BASE_DELAY * 2 ** attempt, MAX_RECONNECT_DELAY);
 
       reconnectTimeoutRef.current = window.setTimeout(() => {
+        if (isUnmountedRef.current) return;
         reconnectAttemptRef.current += 1;
         connectWebSocket();
       }, delay);
@@ -93,13 +99,22 @@ export function useRealtimeFarms() {
   }, []);
 
   useEffect(() => {
+    isUnmountedRef.current = false;
     connectWebSocket();
 
     return () => {
-      if (reconnectTimeoutRef.current) {
+      isUnmountedRef.current = true;
+
+      if (reconnectTimeoutRef.current !== null) {
         clearTimeout(reconnectTimeoutRef.current);
+        reconnectTimeoutRef.current = null;
       }
-      wsRef.current?.close();
+
+      if (wsRef.current) {
+        wsRef.current.onclose = null;
+        wsRef.current.close();
+        wsRef.current = null;
+      }
     };
   }, [connectWebSocket]);
 
