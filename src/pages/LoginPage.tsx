@@ -9,6 +9,7 @@ export default function LoginPage() {
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [errorKey, setErrorKey] = useState<string | null>(null);
 
   const { t } = useTranslation();
 
@@ -16,16 +17,26 @@ export default function LoginPage() {
     mutationFn: login,
     onSuccess: (data) => {
       localStorage.setItem("accessToken", data.access_token);
-      console.log("로그인 성공");
       navigate("/", { replace: true });
     },
-    onError: (error) => {
-      console.error("로그인 실패", error);
+    onError: (error: any) => {
+      const status = error?.response?.status;
+      if (status === 401) {
+        setErrorKey("login.invalidCredentials");
+      } else if (status === 422) {
+        setErrorKey("login.invalidRequest");
+      } else {
+        setErrorKey("login.serverError");
+      }
     },
   });
 
   const handleLogin = () => {
-    if (!username || !password) return;
+    if (!username || !password) {
+      setErrorKey("login.requiredFields");
+      return;
+    }
+    setErrorKey(null);
     mutate({ username, password });
   };
 
@@ -54,6 +65,10 @@ export default function LoginPage() {
             placeholder={t("login.password")}
             className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#062454]"
           />
+
+          {errorKey && (
+            <p className="text-red-500 text-xs text-center">{t(errorKey)}</p>
+          )}
 
           <button
             onClick={handleLogin}

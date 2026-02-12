@@ -4,7 +4,11 @@
     "button": "Login",
     "loggingIn": "Logging in...",
     "id": "Username",
-    "password": "Password"
+    "password": "Password",
+    "invalidCredentials": "Invalid username or password.",
+    "invalidRequest": "The request format is invalid.",
+    "serverError": "A server error occurred. Please try again later.",
+    "requiredFields": "Please enter your username and password."
   },
   "dashboard": {
     "title": "Dashboard",

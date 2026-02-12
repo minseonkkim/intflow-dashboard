@@ -4,7 +4,11 @@
     "button": "로그인",
     "loggingIn": "로그인 중...",
     "id": "아이디",
-    "password": "비밀번호"
+    "password": "비밀번호",
+    "invalidCredentials": "아이디 또는 비밀번호가 올바르지 않습니다.",
+    "invalidRequest": "요청 형식이 올바르지 않습니다.",
+    "serverError": "서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.",
+    "requiredFields": "아이디와 비밀번호를 입력해주세요."
   },
   "dashboard": {
     "title": "대시보드",
