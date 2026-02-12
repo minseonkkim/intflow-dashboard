@@ -5,6 +5,7 @@ import FarmSelector from "@/component/dashboard/FarmSelector";
 import { useRealtimeFarms } from "@/hooks/useRealtimeFarms";
 import FarmSection from "@/component/dashboard/FarmSection";
 import { Loader2 } from "lucide-react";
+import ErrorScreen from "@/component/common/ErrorScreen";
 
 export default function DashboardPage() {
   const { farms: realtimeFarms, isLoading, isError } = useRealtimeFarms();
@@ -25,7 +26,7 @@ export default function DashboardPage() {
       </div>
     );
 
-  if (isError) return <p className="p-6 text-red-500">에러 발생</p>;
+  if (isError) return <ErrorScreen />;
 
   const filteredFarms =
     selectedFarmId === "ALL"

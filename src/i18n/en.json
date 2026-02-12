@@ -21,11 +21,17 @@
     "listofanomalies": "List of Anomalies",
     "minutes": "min",
     "pigcount": "head(s)",
-    "detail": "Detail"
+    "detail": "Detail",
+    "error": "Something went wrong while loading data.",
+    "retry": "Retry"
   },
   "detail": {
     "activity": "Activity",
     "feeding": "Feeding Time",
     "minutes": "min"
+  },
+  "error": {
+    "error": "Something went wrong while loading data.",
+    "retry": "Retry"
   }
 }

@@ -27,5 +27,9 @@
     "activity": "활동량",
     "feeding": "급이 시간",
     "minutes": "분"
+  },
+  "error": {
+    "error": "데이터를 불러오는 중 문제가 발생했습니다.",
+    "retry": "다시 시도"
   }
 }

@@ -6,6 +6,7 @@ import LanguageSwitcher from "@/component/common/LanguageSwitcher";
 import { useEffect, useState } from "react";
 import RealtimeDataCard from "@/component/detail/RealtimeDataCard";
 import ActivityChart from "@/component/detail/ActivityChart";
+import ErrorScreen from "@/component/common/ErrorScreen";
 
 type ChartEntry = {
   index: number;
@@ -28,7 +29,7 @@ export default function PenDetailPage() {
       </div>
     );
 
-  if (isError) return <p>에러 발생</p>;
+  if (isError) return <ErrorScreen />;
 
   // 그래프용 데이터 가공
   const [chartData, setChartData] = useState<ChartEntry[]>(
