@@ -20,6 +20,7 @@ interface Props {
 export default function PenCard({ pen, isOpen, onToggle }: Props) {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const abnormalPigs = pen.abnormal_pigs ?? [];
 
   return (
     <div
@@ -39,7 +40,7 @@ export default function PenCard({ pen, isOpen, onToggle }: Props) {
           <div className="flex flex-row gap-2 items-center">
             <span className="font-bold text-lg">{pen.pen_name}</span>
             <span className="text-white bg-red-600 px-3 py-1.5 rounded-full text-sm">
-              {pen.abnormal_pigs.length}
+              {abnormalPigs.length}
               {t("dashboard.pigcount")}
             </span>
           </div>
@@ -99,8 +100,8 @@ export default function PenCard({ pen, isOpen, onToggle }: Props) {
       </div>
 
       {/* 비정상 돼지 리스트 */}
-      {isOpen && pen.abnormal_pigs.length > 0 && (
-        <AbnormalPigList pigs={pen.abnormal_pigs} />
+      {isOpen && abnormalPigs.length > 0 && (
+        <AbnormalPigList pigs={abnormalPigs} />
       )}
     </div>
   );

@@ -1,8 +1,9 @@
 import PenCard from "./PenCard";
+import type { Pen } from "@/types/pen";
 
 interface Farm {
   piggery_id: string;
-  pens: any[];
+  pens?: Pen[] | null;
 }
 
 interface Props {
@@ -12,10 +13,12 @@ interface Props {
 }
 
 export default function FarmSection({ farm, openPenId, setOpenPenId }: Props) {
+  const pens = Array.isArray(farm.pens) ? farm.pens : [];
+
   return (
     <section className="bg-[#F8F8F8] rounded-lg p-3 lg:p-6 min-h-[600px] flex flex-col">
       <div className="space-y-4">
-        {farm.pens.map((pen) => (
+        {pens.map((pen) => (
           <PenCard
             key={pen.pen_id}
             pen={pen}

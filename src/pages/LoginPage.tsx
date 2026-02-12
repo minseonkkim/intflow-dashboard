@@ -32,12 +32,15 @@ export default function LoginPage() {
   });
 
   const handleLogin = () => {
-    if (!username || !password) {
+    const trimmedUsername = username.trim();
+    const trimmedPassword = password.trim();
+
+    if (!trimmedUsername || !trimmedPassword) {
       setErrorKey("login.requiredFields");
       return;
     }
     setErrorKey(null);
-    mutate({ username, password });
+    mutate({ username: trimmedUsername, password: trimmedPassword });
   };
 
   return (

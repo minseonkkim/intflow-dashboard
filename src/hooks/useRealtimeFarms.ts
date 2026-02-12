@@ -11,10 +11,10 @@ export function useRealtimeFarms() {
   const reconnectTimeoutRef = useRef<number | null>(null);
   const isUnmountedRef = useRef(false);
 
-  const MAX_RECONNECT_DELAY = 30000; // 최대 30초
-  const BASE_DELAY = 1000; // 1초
+  const MAX_RECONNECT_DELAY = 30000;
+  const BASE_DELAY = 1000;
 
-  // 초기 데이터 세팅
+  // Keep local farms in sync with initial query payload.
   useEffect(() => {
     if (initialData?.piggeies) setFarms(initialData.piggeies);
   }, [initialData]);
@@ -33,25 +33,33 @@ export function useRealtimeFarms() {
 
     ws.onopen = () => {
       console.log("WebSocket connected");
-      reconnectAttemptRef.current = 0; // 성공하면 초기화
+      reconnectAttemptRef.current = 0;
     };
 
     ws.onmessage = (event) => {
       try {
-        const message = JSON.parse(event.data) as { piggeies: Piggery[] };
+        const message = JSON.parse(event.data) as { piggeies?: Piggery[] };
+        if (!Array.isArray(message.piggeies)) return;
 
         setFarms((prevFarms) =>
           message.piggeies.map((incomingFarm) => {
+            const incomingPens = Array.isArray(incomingFarm.pens)
+              ? incomingFarm.pens
+              : [];
             const existingFarm = prevFarms.find(
               (f) => f.piggery_id === incomingFarm.piggery_id,
             );
 
             if (existingFarm) {
+              const existingPens = Array.isArray(existingFarm.pens)
+                ? existingFarm.pens
+                : [];
+
               return {
                 ...existingFarm,
                 ...incomingFarm,
-                pens: incomingFarm.pens.map((incomingPen) => {
-                  const existingPen = existingFarm.pens.find(
+                pens: incomingPens.map((incomingPen) => {
+                  const existingPen = existingPens.find(
                     (p) => p.pen_id === incomingPen.pen_id,
                   );
 
@@ -69,7 +77,10 @@ export function useRealtimeFarms() {
               };
             }
 
-            return incomingFarm;
+            return {
+              ...incomingFarm,
+              pens: incomingPens,
+            };
           }),
         );
       } catch (err) {
