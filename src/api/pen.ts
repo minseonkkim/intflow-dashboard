@@ -7,6 +7,5 @@ export const fetchPens = async (): Promise<PensResponse> => {
   if (!res.data || !Array.isArray(res.data.piggeies)) {
     throw new Error("Invalid pens response");
   }
-  console.log(res.data);
   return res.data;
 };

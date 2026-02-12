@@ -5,7 +5,7 @@ import FarmSelector from "@/component/dashboard/FarmSelector";
 import { useRealtimeFarms } from "@/hooks/useRealtimeFarms";
 import FarmSection from "@/component/dashboard/FarmSection";
 import ErrorScreen from "@/component/common/ErrorScreen";
-import LoadingScrean from "@/component/common/LoadingScrean";
+import LoadingScreen from "@/component/common/LoadingScreen";
 
 export default function DashboardPage() {
   const { farms: realtimeFarms, isLoading, isError } = useRealtimeFarms();
@@ -22,7 +22,7 @@ export default function DashboardPage() {
   }, [realtimeFarms]);
 
   if (isLoading) {
-    return <LoadingScrean />;
+    return <LoadingScreen />;
   }
 
   if (isError) {

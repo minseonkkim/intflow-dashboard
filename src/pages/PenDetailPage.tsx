@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import RealtimeDataCard from "@/component/detail/RealtimeDataCard";
 import ActivityChart from "@/component/detail/ActivityChart";
 import ErrorScreen from "@/component/common/ErrorScreen";
-import LoadingScrean from "@/component/common/LoadingScrean";
+import LoadingScreen from "@/component/common/LoadingScreen";
 
 type ChartEntry = {
   index: number;
@@ -56,7 +56,7 @@ export default function PenDetailPage() {
   }, [realtime]);
 
   if (isLoading) {
-    return <LoadingScrean />;
+    return <LoadingScreen />;
   }
 
   if (isError || !data) {
