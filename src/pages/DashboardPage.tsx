@@ -4,8 +4,8 @@ import { useTranslation } from "react-i18next";
 import FarmSelector from "@/component/dashboard/FarmSelector";
 import { useRealtimeFarms } from "@/hooks/useRealtimeFarms";
 import FarmSection from "@/component/dashboard/FarmSection";
-import { Loader2 } from "lucide-react";
 import ErrorScreen from "@/component/common/ErrorScreen";
+import LoadingScrean from "@/component/common/LoadingScrean";
 
 export default function DashboardPage() {
   const { farms: realtimeFarms, isLoading, isError } = useRealtimeFarms();
@@ -22,11 +22,7 @@ export default function DashboardPage() {
   }, [realtimeFarms]);
 
   if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-full">
-        <Loader2 className="animate-spin text-white w-20 h-20" />
-      </div>
-    );
+    return <LoadingScrean />;
   }
 
   if (isError) {

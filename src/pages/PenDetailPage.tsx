@@ -1,12 +1,13 @@
 import { useParams } from "react-router-dom";
 import { usePenDetail } from "@/hooks/usePenDetail";
 import { usePenRealtime } from "@/hooks/usePenRealtime";
-import { ChevronLeft, Loader2 } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
 import LanguageSwitcher from "@/component/common/LanguageSwitcher";
 import { useEffect, useState } from "react";
 import RealtimeDataCard from "@/component/detail/RealtimeDataCard";
 import ActivityChart from "@/component/detail/ActivityChart";
 import ErrorScreen from "@/component/common/ErrorScreen";
+import LoadingScrean from "@/component/common/LoadingScrean";
 
 type ChartEntry = {
   index: number;
@@ -55,11 +56,7 @@ export default function PenDetailPage() {
   }, [realtime]);
 
   if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-full">
-        <Loader2 className="animate-spin text-white w-20 h-20" />
-      </div>
-    );
+    return <LoadingScrean />;
   }
 
   if (isError || !data) {
