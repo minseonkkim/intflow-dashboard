@@ -45,7 +45,7 @@ export default function PenDetailPage() {
     setChartData((prev) => {
       const newEntry: ChartEntry = {
         index: prev.length > 0 ? prev[prev.length - 1].index + 1 : 1,
-        timestamp: new Date().toLocaleTimeString(),
+        timestamp: new Date().toLocaleTimeString("en-GB"),
         activity: realtime.data.activity,
         feeding: realtime.data.feeding_time,
       };
