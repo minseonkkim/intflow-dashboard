@@ -21,18 +21,26 @@ export function useRealtimeFarms() {
     const token = localStorage.getItem("accessToken");
     if (!token) return;
 
-    const ws = new WebSocket(import.meta.env.VITE_WS_API_BASE_URL);
+    const wsBaseUrl = import.meta.env.VITE_WS_API_BASE_URL;
+    const separator = wsBaseUrl.includes("?") ? "&" : "?";
+    const ws = new WebSocket(
+      `${wsBaseUrl}${separator}token=${encodeURIComponent(token)}`,
+    );
     wsRef.current = ws;
 
     ws.onopen = () => {
       reconnectAttemptRef.current = 0;
-      ws.send(JSON.stringify({ token }));
     };
 
     ws.onmessage = (event) => {
       try {
-        const message = JSON.parse(event.data) as { piggeies?: Piggery[] };
-        const incomingFarms = message.piggeies;
+        const message = JSON.parse(event.data) as {
+          piggeies?: Piggery[];
+          piggeries?: Piggery[];
+        };
+        const incomingFarms = Array.isArray(message.piggeies)
+          ? message.piggeies
+          : message.piggeries;
         if (!Array.isArray(incomingFarms)) return;
 
         setRealtimeFarms((prevFarms) => {

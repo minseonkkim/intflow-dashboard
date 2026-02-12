@@ -8,7 +8,7 @@ import RealtimeDataCard from "@/component/detail/RealtimeDataCard";
 import ActivityChart from "@/component/detail/ActivityChart";
 import ErrorScreen from "@/component/common/ErrorScreen";
 import LoadingScreen from "@/component/common/LoadingScreen";
-import type { PenDetailTimeSeriesPoint } from "@/types/pen";
+import type { PenDetailTimeSeriesPoint, PenRealtimeSample } from "@/types/pen";
 
 type ChartEntry = {
   index: number;
@@ -40,20 +40,24 @@ export default function PenDetailPage() {
   }, [data]);
 
   const chartData = useMemo<ChartEntry[]>(() => {
-    if (!realtime?.data) return baseChartData;
+    if (realtime.samples.length === 0) return baseChartData;
 
-    const nextIndex =
-      baseChartData.length > 0 ? baseChartData[baseChartData.length - 1].index + 1 : 1;
+    const startIndex =
+      baseChartData.length > 0
+        ? baseChartData[baseChartData.length - 1].index + 1
+        : 1;
 
-    const newEntry: ChartEntry = {
-      index: nextIndex,
-        timestamp: new Date().toLocaleTimeString("en-GB"),
-        activity: realtime.data.activity,
-        feeding: realtime.data.feeding_time,
-      };
+    const realtimeEntries = realtime.samples.map(
+      (sample: PenRealtimeSample, index): ChartEntry => ({
+        index: startIndex + index,
+        timestamp: sample.timestamp,
+        activity: sample.activity,
+        feeding: sample.feeding_time,
+      }),
+    );
 
-    return [...baseChartData, newEntry].slice(-10);
-  }, [baseChartData, realtime]);
+    return [...baseChartData, ...realtimeEntries].slice(-10);
+  }, [baseChartData, realtime.samples]);
 
   if (isLoading) {
     return <LoadingScreen />;
@@ -82,7 +86,7 @@ export default function PenDetailPage() {
       </div>
 
       {/* 실시간 카드 */}
-      {realtime?.data && <RealtimeDataCard realtime={realtime.data} />}
+      {realtime.latest?.data && <RealtimeDataCard realtime={realtime.latest.data} />}
 
       {/* 활동 그래프 */}
       <ActivityChart chartData={chartData} />

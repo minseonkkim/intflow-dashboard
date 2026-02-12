@@ -35,6 +35,10 @@ export interface PenRealtimeMessage {
   data: PenRealtimeData;
 }
 
+export interface PenRealtimeSample extends PenRealtimeData {
+  timestamp: string;
+}
+
 export interface PenDetailTimeSeriesPoint {
   activity: number;
   feeding_time: number;
